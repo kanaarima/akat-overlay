@@ -63,10 +63,12 @@ def get_stats(clears_page=0):
     while True:
         time.sleep(0.5)
         req = requests.get(f"https://akatsuki.gg/api/v1/users/scores/best?mode={config['mode']}&p={clears_page}&l=100&rx={config['relax']}&id={config['user_id']}").json()
+        if not req['scores']:
+            req['scores'] = []
         if len(req['scores']) == 100:
             clears_page += 1
             continue
-        clears = (clears_page * 100) + len(req['scores'])
+        clears = ((clears_page-1) * 100) + len(req['scores'])
         break
     first_places = requests.get(f"https://akatsuki.gg/api/v1/users/scores/first?mode={config['mode']}&p=0&l=1&rx={config['relax']}&id={config['user_id']}").json()['total']
     return {'api': stats['stats'], 'firsts': first_places, 'clears': clears, 'page' : clears_page}
